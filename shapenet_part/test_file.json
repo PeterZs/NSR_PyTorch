@@ -1,0 +1,9 @@
+[
+    {
+        "test_id" : 0,
+        "category" : "02691156",
+        "source_id" : "7182efccab0d3553c27f2d9f006d69eb",
+        "labels" : [ "body", "wing1" ,"wing2" ,"tail1","tail2","tail3"],
+        "gt_labels_con" : [[1,0],[2,1],[3,2]]
+    }
+]

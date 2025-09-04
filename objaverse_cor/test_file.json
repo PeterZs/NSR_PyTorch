@@ -1,0 +1,7 @@
+[
+    {
+        "test_id" : 0,
+        "category" : "bicycle",
+        "source_id" : "input_your_objaverse_source_model_id"
+    }
+]
