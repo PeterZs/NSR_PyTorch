@@ -14,8 +14,8 @@ import json
 test_file = './objaverse_cor/test_file.json'
 test_id =  0
 
-extract_t = 9
-extract_l = 12
+extract_t = 11
+extract_l = 9
 
 with open(test_file, 'r') as f:
     test_params = json.load(f)[test_id]
@@ -110,7 +110,7 @@ saving_features = False
 
 render_num = 5
 
-from match_utils.tools import mapping_occupy_voxels_dict, get_target_2_source_coarse_based, smooth_mapping_dict, upsample_voxel_mapping
+from match_utils.tools import mapping_occupy_voxels_dict, get_target_2_source_coarse_based, upsample_voxel_mapping
 
 for extract_t in extract_t_arr:
     print('extract_t', str(extract_t), flush=True)
@@ -169,21 +169,14 @@ for extract_t in extract_t_arr:
                 if down_idx == 0:continue
                 target_source_coarse_mapping = get_target_2_source_coarse_based(source_occupy_voxels, target_occupy_voxels, source_features_flat_scale_arr[down_idx], target_features_flat_scale_arr[down_idx], target_source_coarse_mapping, coarse_scale=scale_arr[down_idx-1], detail_scale=down_scale)
             
-            smoothed_dict = smooth_mapping_dict(target_source_coarse_mapping, np.unique(source_occupy_voxels, axis = 0), k=3)
-            smoothed_dict_up = upsample_voxel_mapping(smoothed_dict, np.unique(target_occupy_voxels_origin, axis=0), np.unique(source_occupy_voxels_origin, axis=0), scale=4)
-
             dict_up = upsample_voxel_mapping(target_source_coarse_mapping, np.unique(target_occupy_voxels_origin, axis=0), np.unique(source_occupy_voxels_origin, axis=0), scale=4)
             
-            smooth_target_colormap = []
             target_colormap = []
 
             for target_map_voxel in target_occupy_voxels_origin:
-                smooth_map_source_voxel = smoothed_dict_up[tuple(target_map_voxel.numpy())]
                 map_source_voxel = dict_up[tuple(target_map_voxel.numpy())]
-                smooth_target_colormap.append(source_voxel_colormap[tuple(smooth_map_source_voxel)])
                 target_colormap.append(source_voxel_colormap[tuple(map_source_voxel)])
             
             if output_res:
                 print(f'output ply to {str(extract_t)}_{str(extract_l)}.ply', flush=True)
-                color_ply_with_colormap(target_positions, smooth_target_colormap, target_output_path, name=str(extract_t) +'_' + str(extract_l) +'_smooth.ply')
                 color_ply_with_colormap(target_positions, target_colormap, target_output_path, name=str(extract_t) +'_' + str(extract_l) +'.ply')

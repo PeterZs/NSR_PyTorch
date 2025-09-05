@@ -247,31 +247,6 @@ def label_voxels_with_colormap(mesh_dir, resolution = 64):
     return positions, coords, colormap_dict, final_color
 
 
-def smooth_mapping_dict(mapping_dict, voxel_list, k=3):
-
-    source_voxels = np.array(list(mapping_dict.keys()))
-    target_voxels = np.array(list(mapping_dict.values()))
-
-    tree_source = cKDTree(source_voxels)
-
-    voxel_array = np.array(voxel_list)
-    tree_target = cKDTree(voxel_array)
-
-    smoothed_dict = OrderedDict()
-    for i, voxel in enumerate(source_voxels):
-        _, indices = tree_source.query(voxel, k=k)
-        neighbor_targets = target_voxels[indices]
-
-        smoothed = np.mean(neighbor_targets, axis=0)
-
-        _, nearest_idx = tree_target.query(smoothed)
-        constrained_smoothed = voxel_array[nearest_idx]
-
-
-        smoothed_dict[tuple(voxel)] = tuple(constrained_smoothed.astype(int))
-
-    return smoothed_dict
-
 
 def upsample_voxel_mapping(
     lowres_mapping_dict, 

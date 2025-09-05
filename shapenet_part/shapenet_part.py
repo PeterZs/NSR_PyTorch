@@ -111,17 +111,13 @@ cfg_s = 2.5
 if not extract_t is None:
     extract_t_arr = np.array([extract_t])
 else:
-    extract_t_arr = np.arange(1, 12, 1)
+    extract_t_arr = np.arange(1, coarse_total_steps, 1)
 
 if not extract_l is None:
     extract_l_arr = np.array([extract_l])
 else:
     extract_l_arr = np.arange(0, 24, 1)
 
-if not cfg_s is None:
-    cfg_s_arr = np.array([cfg_s])
-else:
-    cfg_s_arr = np.arange(-1, 7.5, 0.5)
 
 render_num = 5
 
@@ -130,106 +126,103 @@ saving_features = False
 use_his = False
 output_iou = False
 
-iou_arr = [[[] for _ in range(len(extract_l_arr))] for _ in range(len(cfg_s_arr))]
+iou_arr = [[] for _ in range(len(extract_l_arr))]
 
 from match_utils.tools import mapping_occupy_voxels_dict, get_target_2_source_coarse_based, mapping_occupy_voxels_coarse_based, unique_voxels_with_labels, process_predicted_labels, caculate_voxels_IOU_labels
 
 for extract_t in extract_t_arr:
     print('extract_t', str(extract_t), flush=True)
 
-    for cfg_idx, cfg_s in enumerate(cfg_s_arr):
-        print('cfg_s', str(cfg_s), flush=True)
+    extract_t = int(extract_t)
 
-        extract_t = int(extract_t)
-        cfg_s = float(cfg_s)
+    source_images = get_render_imgs(source_image_dir, render_num)
 
-        source_images = get_render_imgs(source_image_dir, render_num)
+    if use_his and os.path.exists(os.path.join(output_root_path, 'source', str(extract_t) + '.npy')):
+        source_features = np.load(os.path.join(output_root_path, 'source', str(extract_t) + '.npy'), allow_pickle=True)
+        source_features = [th.tensor(f) for f in source_features]
+    else:
+        source_features = get_features(source_images, source_latent, extract_t = int(extract_t), cfg_s = cfg_s)
 
-        if use_his and os.path.exists(os.path.join(output_root_path, 'source', str(extract_t) + '.npy')):
-            source_features = np.load(os.path.join(output_root_path, 'source', str(extract_t) + '.npy'), allow_pickle=True)
-            source_features = [th.tensor(f) for f in source_features]
+    if saving_features and not os.path.exists(os.path.join(output_root_path, 'source', str(extract_t) + '.npy')):
+        save_features_to_numpy(source_features, output_dir=os.path.join(output_root_path, 'source'), name=str(extract_t) + '.npy')
+
+    test_target_path = np.loadtxt(test_file_path, dtype=str)
+    num_target = len(test_target_path)
+    print('num_target '+ str(num_target))
+    target_path_arr = [os.path.join(root_path, d) for d in test_target_path]
+    target_output_arr = [os.path.join(output_root_path, d) for d in test_target_path]
+    target_gt_arr = [os.path.join(gt_path, d+'.json') for d in test_target_path]
+    test_num = len(target_path_arr)
+
+    total_iou = [0 for _ in range(len(extract_l_arr))]
+    totol_num = 0
+
+    for i in range(test_num):
+        print('process ', str(i))
+        target_mesh_path = os.path.join(target_path_arr[i], 'models')
+        target_output_path= target_output_arr[i]
+        target_gt_path = target_gt_arr[i]
+        target_obj_path = os.path.join(target_mesh_path, 'model_normalized.obj')
+        target_image_path =  os.path.join(target_mesh_path, 'renders')
+        target_positions, target_latent = get_input(target_mesh_path)
+        target_occupy_voxels = ((th.tensor(target_positions) + 0.5) * coarse_resolution * 4).int().contiguous()
+        target_occupy_voxels = target_occupy_voxels // 4
+        with open(target_gt_path, 'r') as f:
+            target_gt_labels = json.load(f).get('labels')
+        color_ply(target_positions, target_gt_labels, range(len(labels)), os.path.join(target_output_path), name='gt.ply')
+
+        target_images = get_render_imgs(target_image_path, render_num)
+
+        if use_his and os.path.exists(os.path.join(target_output_path, str(extract_t) + '.npy')):
+            target_features = np.load(os.path.join(target_output_path, str(extract_t) + '.npy'), allow_pickle=True)
+            target_features = [th.tensor(f) for f in target_features]
         else:
-            source_features = get_features(source_images, source_latent, extract_t = int(extract_t), cfg_s = cfg_s)
+            target_features = get_features(target_images, target_latent, extract_t = extract_t, cfg_s = cfg_s)
 
-        if saving_features and not os.path.exists(os.path.join(output_root_path, 'source', str(extract_t) + '.npy')):
-            save_features_to_numpy(source_features, output_dir=os.path.join(output_root_path, 'source'), name=str(extract_t) + '.npy')
+        if saving_features and not os.path.exists(os.path.join(target_output_path, str(extract_t) + '.npy')):
+            os.makedirs(target_output_path, exist_ok=True)
+            save_features_to_numpy(target_features, target_output_path , name=str(extract_t) + '.npy')
 
-        test_target_path = np.loadtxt(test_file_path, dtype=str)
-        num_target = len(test_target_path)
-        print('num_target '+ str(num_target))
-        target_path_arr = [os.path.join(root_path, d) for d in test_target_path]
-        target_output_arr = [os.path.join(output_root_path, d) for d in test_target_path]
-        target_gt_arr = [os.path.join(gt_path, d+'.json') for d in test_target_path]
-        test_num = len(target_path_arr)
+        for l_idx, extract_l in enumerate(extract_l_arr):
+            extract_l = int(extract_l)
+            source_features_layer = source_features[extract_l]
+            source_features_flat_scale_arr = get_down_scale_features(source_features_layer, scale_arr)
 
-        total_iou = [0 for _ in range(len(extract_l_arr))]
-        totol_num = 0
+            target_features_layer = target_features[extract_l]
+            target_features_flat_scale_arr = get_down_scale_features(target_features_layer, scale_arr)
 
-        for i in range(test_num):
-            print('process ', str(i))
-            target_mesh_path = os.path.join(target_path_arr[i], 'models')
-            target_output_path= target_output_arr[i]
-            target_gt_path = target_gt_arr[i]
-            target_obj_path = os.path.join(target_mesh_path, 'model_normalized.obj')
-            target_image_path =  os.path.join(target_mesh_path, 'renders')
-            target_positions, target_latent = get_input(target_mesh_path)
-            target_occupy_voxels = ((th.tensor(target_positions) + 0.5) * coarse_resolution * 4).int().contiguous()
-            target_occupy_voxels = target_occupy_voxels // 4
-            with open(target_gt_path, 'r') as f:
-                target_gt_labels = json.load(f).get('labels')
-            color_ply(target_positions, target_gt_labels, range(len(labels)), os.path.join(target_output_path), name='gt.ply')
+            target_source_coarse_mapping = mapping_occupy_voxels_dict(source_occupy_voxels, target_occupy_voxels, source_features_flat_scale_arr[0], target_features_flat_scale_arr[0], coarse_scale=scale_arr[0])
 
-            target_images = get_render_imgs(target_image_path, render_num)
+            for down_idx, down_scale in enumerate(scale_arr):
+                if down_idx == 0:continue
+                if down_idx == (len(scale_arr) - 1): break
+                target_source_coarse_mapping = get_target_2_source_coarse_based(source_occupy_voxels, target_occupy_voxels, source_features_flat_scale_arr[down_idx], target_features_flat_scale_arr[down_idx], target_source_coarse_mapping, coarse_scale=scale_arr[down_idx-1], detail_scale=down_scale)
+            
+            target_detail_occupy_voxels_labels = mapping_occupy_voxels_coarse_based(source_occupy_voxels, target_occupy_voxels, source_features_flat_scale_arr[-1], target_features_flat_scale_arr[-1], source_voxel_labels, target_source_coarse_mapping, coarse_scale=scale_arr[-2],detail_scale=scale_arr[-1])
+            
+            _, target_predict_labels = unique_voxels_with_labels(target_occupy_voxels, target_detail_occupy_voxels_labels)
+            target_process_predict_labels = process_predicted_labels(target_predict_labels, gt_labels_con)
+            target_iou = caculate_voxels_IOU_labels(target_occupy_voxels, target_gt_path, target_process_predict_labels)
+            total_iou[l_idx]+=target_iou
+            
+            print(f'{str(extract_t)}_{str(extract_l)}_{str(cfg_s)}target_iou', target_iou, flush=True)
+            if output_res:
+                print(f'output ply to {str(extract_t)}_{str(extract_l)}_{str(cfg_s)}.ply', flush=True)
+                color_ply(target_positions, target_detail_occupy_voxels_labels, range(len(labels)), target_output_path, name=str(extract_t) +'_' + str(extract_l) + '_' +{str(cfg_s)} +'.ply')
+            
+        totol_num+=1
 
-            if use_his and os.path.exists(os.path.join(target_output_path, str(extract_t) + '.npy')):
-                target_features = np.load(os.path.join(target_output_path, str(extract_t) + '.npy'), allow_pickle=True)
-                target_features = [th.tensor(f) for f in target_features]
-            else:
-                target_features = get_features(target_images, target_latent, extract_t = extract_t, cfg_s = cfg_s)
-
-            if saving_features and not os.path.exists(os.path.join(target_output_path, str(extract_t) + '.npy')):
-                os.makedirs(target_output_path, exist_ok=True)
-                save_features_to_numpy(target_features, target_output_path , name=str(extract_t) + '.npy')
-
-            for l_idx, extract_l in enumerate(extract_l_arr):
-                extract_l = int(extract_l)
-                source_features_layer = source_features[extract_l]
-                source_features_flat_scale_arr = get_down_scale_features(source_features_layer, scale_arr)
-
-                target_features_layer = target_features[extract_l]
-                target_features_flat_scale_arr = get_down_scale_features(target_features_layer, scale_arr)
-
-                target_source_coarse_mapping = mapping_occupy_voxels_dict(source_occupy_voxels, target_occupy_voxels, source_features_flat_scale_arr[0], target_features_flat_scale_arr[0], coarse_scale=scale_arr[0])
-
-                for down_idx, down_scale in enumerate(scale_arr):
-                    if down_idx == 0:continue
-                    if down_idx == (len(scale_arr) - 1): break
-                    target_source_coarse_mapping = get_target_2_source_coarse_based(source_occupy_voxels, target_occupy_voxels, source_features_flat_scale_arr[down_idx], target_features_flat_scale_arr[down_idx], target_source_coarse_mapping, coarse_scale=scale_arr[down_idx-1], detail_scale=down_scale)
-                
-                target_detail_occupy_voxels_labels = mapping_occupy_voxels_coarse_based(source_occupy_voxels, target_occupy_voxels, source_features_flat_scale_arr[-1], target_features_flat_scale_arr[-1], source_voxel_labels, target_source_coarse_mapping, coarse_scale=scale_arr[-2],detail_scale=scale_arr[-1])
-                
-                _, target_predict_labels = unique_voxels_with_labels(target_occupy_voxels, target_detail_occupy_voxels_labels)
-                target_process_predict_labels = process_predicted_labels(target_predict_labels, gt_labels_con)
-                target_iou = caculate_voxels_IOU_labels(target_occupy_voxels, target_gt_path, target_process_predict_labels)
-                total_iou[l_idx]+=target_iou
-                
-                print(f'{str(extract_t)}_{str(extract_l)}_{str(cfg_s)}target_iou', target_iou, flush=True)
-                if output_res:
-                    print(f'output ply to {str(extract_t)}_{str(extract_l)}_{str(cfg_s)}.ply', flush=True)
-                    color_ply(target_positions, target_detail_occupy_voxels_labels, range(len(labels)), target_output_path, name=str(extract_t) +'_' + str(extract_l) + '_' +{str(cfg_s)} +'.ply')
-                
-            totol_num+=1
-
-        for l_idx in range(len(extract_l_arr)):
-            iou_arr[cfg_idx][l_idx].append(total_iou[l_idx]/totol_num)
-            print(f'average iou{str(l_idx)}_{str(extract_t)}_{str(cfg_s)}', iou_arr[cfg_idx][l_idx], flush=True)
-        if output_iou:
-            print(iou_arr)
-            np.save(os.path.join(output_root_path, 'test_iou.npy'), np.array(iou_arr, dtype=object))
+    for l_idx in range(len(extract_l_arr)):
+        iou_arr[l_idx].append(total_iou[l_idx]/totol_num)
+        print(f'average iou{str(l_idx)}_{str(extract_t)}_{str(cfg_s)}', iou_arr[l_idx], flush=True)
+    if output_iou:
+        print(iou_arr)
+        np.save(os.path.join(output_root_path, 'test_iou.npy'), np.array(iou_arr, dtype=object))
 
 
-for cfg_idx, cfg_res in enumerate(iou_arr):
-    print(f'average iou{str(cfg_idx)}', cfg_res, flush=True)
+# 输出最终结果
+for l_idx, iou_res in enumerate(iou_arr):
+    print(f'average iou{str(l_idx)}', iou_res, flush=True)
 
 if output_iou:
     np.save(os.path.join(output_root_path, 'test_iou.npy'), np.array(iou_arr))

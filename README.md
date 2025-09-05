@@ -147,7 +147,7 @@ Here is the batch testing file [objaverse_dense](objaverse_cor/objaverse_dense.p
 
 Use the following command to perform dense matching between source and target models. Notice that you should pre-download TRELLIS-checkpoint and change the checkpoint root directory in the file and set your testing source model and directory to **test_file** and **test_id**.
 
-The python script allows you to freely adjust hyperparameters of timesteps, layer and cfg_strength. You can set **extract_t** and **extract_l** to **None** to batch test all hyperparameters.
+The python script allows you to freely adjust hyperparameters of timesteps and layer. You can set **extract_t** and **extract_l** to **None** to batch test all hyperparameters.
 
 Keypoint matching results can be found in the output directory and visualized into colored .ply files.
 
@@ -161,7 +161,7 @@ Here is the batch testing file [shapenet_part](shapenet_part/shapenet_part.py) d
 
 Use the following command to perform co-segmentation between source and target models. Notice that you should pre-download TRELLIS-checkpoint and change the checkpoint root directory in the file and set your testing source model and directory to **test_file** and **test_id**. Compared to dense matching, you should also provide a source part-segmentation on source vertices to a .json file and set it to **test_label_path**.
 
-The python script allows you to freely adjust hyperparameters of timesteps, layer and cfg_strength. You can set **extract_t**, **extract_l** and **cfg_s** to **None** to batch test all hyperparameters.
+The python script allows you to freely adjust hyperparameters of timesteps and layer. You can set **extract_t** and **extract_l** to **None** to batch test all hyperparameters.
 
 Co-segmentation results can be found in the output directory and visualized into colored .ply files.
 
