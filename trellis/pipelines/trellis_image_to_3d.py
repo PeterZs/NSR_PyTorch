@@ -209,9 +209,11 @@ class TrellisImageTo3DPipeline(Pipeline):
         total_steps = sampler_params['steps']
         total_extract_features = None
         reso = flow_model.resolution
+
+        noise_time = 0.1
         for i in range(sample_time):
             noise = torch.randn(num_samples, flow_model.in_channels, reso, reso, reso).to(self.device)
-            noise = noise * (extract_time / total_steps) + (1 - (extract_time / total_steps)) * latent
+            noise = noise * (noise_time / total_steps) + (1 - (noise_time / total_steps)) * latent
             sampler_params = {**self.sparse_structure_sampler_params, **sampler_params}
             features = self.sparse_structure_sampler.sample_one_step(
                 flow_model,
@@ -219,7 +221,7 @@ class TrellisImageTo3DPipeline(Pipeline):
                 **cond,
                 **sampler_params,
                 verbose=True,
-                extract_time = extract_time,
+                extract_time=extract_time,
             )
         
             current_features = [item.to('cpu') for item in features]

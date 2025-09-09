@@ -1,4 +1,3 @@
-import imageio
 import os
 import numpy as np
 import open3d as o3d
@@ -10,7 +9,7 @@ import torch as th
 from scipy.spatial import cKDTree
 from collections import OrderedDict
 from scipy.spatial import KDTree
-import trimesh
+from collections import Counter
 
 def voxelize(file):
     model_mesh_path = os.path.join(file, 'renders/mesh.ply')
@@ -169,7 +168,7 @@ def mapping_occupy_voxels_coarse_based(source_occupy_voxels, target_occupy_voxel
         target_occupy_voxel_labels.append(target_occupy_downsample_voxel_labels.get(downsample_voxel))
     return target_occupy_voxel_labels
 
-from collections import Counter
+
 def get_downsample_labels(occupy_voxels, occupy_labels, scale):
     occupy_labels = np.array(occupy_labels)
     occupy_voxels = np.array(occupy_voxels)
