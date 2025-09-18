@@ -176,7 +176,6 @@ Once you obtain the dense correspondence results, you can leverage these mapping
 - **Keypoint Matching**: Establish precise keypoint correspondences between 3D models
 - **Texture Transfer**: Transfer textures between models using dense or part-based mappings
 - **Shape Co-segmentation**: Perform semantic segmentation across different 3D shapes
-- **Cross-modal Applications**: Apply the learned correspondences for various 3D analysis tasks
 <!-- Citation -->
 ## 📜 Citation
 

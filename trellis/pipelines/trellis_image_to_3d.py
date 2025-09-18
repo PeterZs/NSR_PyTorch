@@ -210,7 +210,7 @@ class TrellisImageTo3DPipeline(Pipeline):
         total_extract_features = None
         reso = flow_model.resolution
 
-        noise_time = 0.1
+        noise_time = 0.01
         for i in range(sample_time):
             noise = torch.randn(num_samples, flow_model.in_channels, reso, reso, reso).to(self.device)
             noise = noise * (noise_time / total_steps) + (1 - (noise_time / total_steps)) * latent
@@ -390,6 +390,9 @@ class TrellisImageTo3DPipeline(Pipeline):
         sample_time: int = 1,
         sparse_structure_sampler_params: dict = {},
     ) -> dict:
+        if len(images) > 1:
+            # jump the render image from buttom view
+            images = images[1:]
         images = [self.preprocess_image(image) for image in images]
         cond = self.get_cond(images)
         cond['neg_cond'] = cond['neg_cond'][:1]

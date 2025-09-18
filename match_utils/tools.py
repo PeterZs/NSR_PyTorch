@@ -7,7 +7,6 @@ import json
 import torch.nn.functional as F
 import torch as th
 from scipy.spatial import cKDTree
-from collections import OrderedDict
 from scipy.spatial import KDTree
 from collections import Counter
 
