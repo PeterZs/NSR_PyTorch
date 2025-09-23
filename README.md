@@ -9,7 +9,7 @@
 <sup>3</sup>TeleAI
 </div>
 
-This is the official implementation of our SIGGRAPH ASIA 2025 paper, [Emergent 3D Correspondence from Neural Shape Representation]().
+This is the official implementation of our SIGGRAPH ASIA 2025 paper, [Emergent 3D Correspondence from Neural Shape Representation](https://arxiv.org/abs/2509.17431).
 
 ## Introduction
 
@@ -189,3 +189,7 @@ If you find this work helpful, please consider citing our paper:
     year    = {2025}
 }
 ```
+
+## 🌟 Acknowledgements
+
+- [Trellis](https://github.com/microsoft/TRELLIS)
