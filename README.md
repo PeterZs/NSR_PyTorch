@@ -1,4 +1,4 @@
-# [SIGGRAPH ASIA 2025] Emergent 3D Correspondence from Neural Shape Representation
+# [SIGGRAPH ASIA 2025] Hierarchical Neural Semantic Representation for 3D Semantic Correspondence
 
 <div align="center">
 
@@ -9,7 +9,7 @@
 <sup>3</sup>TeleAI
 </div>
 
-This is the official implementation of our SIGGRAPH ASIA 2025 paper, [Emergent 3D Correspondence from Neural Shape Representation](https://arxiv.org/abs/2509.17431).
+This is the official implementation of our SIGGRAPH ASIA 2025 paper, [Hierarchical Neural Semantic Representation for 3D Semantic Correspondence](https://arxiv.org/abs/2509.17431).
 
 ## Introduction
 
@@ -182,8 +182,8 @@ Once you obtain the dense correspondence results, you can leverage these mapping
 If you find this work helpful, please consider citing our paper:
 
 ```bibtex
-@article{du2025emergent,
-    title   = {Emergent 3D Correspondence from Neural Shape Representation},
+@article{du2025hnsr,
+    title   = {Hierarchical Neural Semantic Representation for 3D Semantic Correspondence},
     author  = {Keyu Du and Jingyu Hu and Haipeng Li and Hao Xu and Haibing Huang and Chi-Wing Fu and Shuaicheng Liu},
     journal = {SIGGRAPH ASIA},
     year    = {2025}
