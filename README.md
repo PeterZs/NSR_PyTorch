@@ -2,11 +2,14 @@
 
 <div align="center">
 
-**Keyu Du<sup>1</sup>, Jingyu Hu<sup>2</sup>, Haipeng Li<sup>1</sup>, Hao Xu<sup>2</sup>, Haibing Huang<sup>3</sup>, Chi-Wing Fu<sup>2</sup>, Shuaicheng Liu<sup>1</sup>**
+**Keyu Du<sup>1</sup>, Jingyu Hu<sup>2†</sup>, Haipeng Li<sup>1</sup>, Hao Xu<sup>2</sup>, Haibing Huang<sup>3</sup>, Chi-Wing Fu<sup>2</sup>, Shuaicheng Liu<sup>1</sup>**
 
 <sup>1</sup>University of Electronic Science and Technology of China (UESTC)
 <sup>2</sup>The Chinese University of Hong Kong (CUHK)
 <sup>3</sup>TeleAI
+
+† Corresponding author  
+
 </div>
 
 This is the official implementation of our SIGGRAPH ASIA 2025 paper, [Hierarchical Neural Semantic Representation for 3D Semantic Correspondence](https://arxiv.org/abs/2509.17431).
