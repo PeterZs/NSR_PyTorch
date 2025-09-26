@@ -14,7 +14,7 @@
 
 This is the official implementation of our SIGGRAPH ASIA 2025 paper, [Hierarchical Neural Semantic Representation for 3D Semantic Correspondence](https://arxiv.org/abs/2509.17431).
 
-## Introduction
+## 💡 Introduction
 
 This paper presents a new approach to estimate accurate and robust 3D semantic correspondence with hierarchical neural semantic representation.
 
@@ -31,7 +31,7 @@ Our method also supports various applications, such as shape co-segmentation, ke
 ![Teaser Image](./assets/teaser.png)
 
 <!-- Installation -->
-## Installation
+## 🚀 Installation
 
 ### Prerequisites
 
@@ -43,7 +43,7 @@ Our method also supports various applications, such as shape co-segmentation, ke
   - Python version 3.8 or higher is required. 
 
 
-### Installation Steps
+###Installation Steps
 
 1. **Clone the repository:**
     ```bash
@@ -110,6 +110,7 @@ If you prefer loading the model from local storage, you can download the model f
 TrellisImageTo3DPipeline.from_pretrained("pretrained_models/TRELLIS-image-large")
 ```
 
+
 <!-- Dataset -->
 ## 📚 Dataset
 
@@ -142,13 +143,19 @@ python dataset_toolkits/process_shapenet_gt.py
 ```
 
 <!-- Usage -->
-## 💡 Usage
+## 📖 Usage
 
 ### **Objaverse(XL)**
 
 Here is the batch testing file [objaverse_dense](objaverse_cor/objaverse_dense.py) demonstrating how to use NSR to get dense matching between Objaverse(XL) 3D models.
 
-Use the following command to perform dense matching between source and target models. Notice that you should pre-download TRELLIS-checkpoint and change the checkpoint root directory in the file and set your testing source model and directory to **test_file** and **test_id**.
+Use the following command to perform dense matching between source and target models.  
+First, download the TRELLIS checkpoint, update the checkpoint root directory, and set **test_file** and **test_id** to your source model and directory.  
+The encoder weights are included in the TRELLIS checkpoint and can be loaded with:  
+
+```bash
+encoder = models.from_pretrained("pretrained_models/TRELLIS-image-large/ckpts/ss_enc_conv3d_16l8_fp16").eval().cuda()
+```
 
 The python script allows you to freely adjust hyperparameters of timesteps and layer. You can set **extract_t** and **extract_l** to **None** to batch test all hyperparameters.
 
@@ -180,6 +187,10 @@ Once you obtain the dense correspondence results, you can leverage these mapping
 - **Texture Transfer**: Transfer textures between models using dense or part-based mappings
 - **Shape Co-segmentation**: Perform semantic segmentation across different 3D shapes
 <!-- Citation -->
+
+## 📬 Feedback
+If you have any questions, please open an issue or contact **dukeyu@std.uestc.edu.cn**.
+
 ## 📜 Citation
 
 If you find this work helpful, please consider citing our paper:

@@ -38,7 +38,7 @@ output_root_path = os.path.join(output_root_path,source_id)
 pipeline = TrellisImageTo3DPipeline.from_pretrained("pretrained_models/TRELLIS-image-xlarge")
 pipeline.cuda()
 
-encoder = models.from_pretrained("pretrained_models/TRELLIS-image-large").eval().cuda()
+encoder = models.from_pretrained("pretrained_models/TRELLIS-image-large/ckpts/ss_enc_conv3d_16l8_fp16").eval().cuda()
 
 from match_utils.tools import mesh_to_voxels, feature_down_sample, feature_to_3d
 import numpy as np
