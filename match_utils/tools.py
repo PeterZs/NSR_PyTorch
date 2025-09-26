@@ -118,7 +118,7 @@ def get_index_of_choosing_expand_voxels(target_detail_voxel, source_detail_occup
             source_detail_pick_index.append(idx)
     return np.array(source_detail_pick_index)
 
-def get_target_2_source_coarse_based(source_occupy_voxels, target_occupy_voxels, source_coarse_features, target_coarse_features, source_detail_mapping_dict, coarse_scale = 4, detail_scale = 2,expand=0):
+def get_target_2_source_coarse_based(source_occupy_voxels, target_occupy_voxels, source_coarse_features, target_coarse_features, source_detail_mapping_dict, coarse_scale = 4, detail_scale = 2,expand=1):
     source_coarse_features = source_coarse_features.squeeze(0)
 
     source_occupy_down_voxels = np.unique(np.array(source_occupy_voxels // detail_scale), axis=0)
@@ -137,7 +137,7 @@ def get_target_2_source_coarse_based(source_occupy_voxels, target_occupy_voxels,
         target_source_voxels_mapping_dict[tuple(target_down_voxel)] = source_occupy_down_voxels[source_voxel_index_pick[max_index]]
     return target_source_voxels_mapping_dict
 
-def mapping_occupy_voxels_coarse_based(source_occupy_voxels, target_occupy_voxels, source_coarse_features, target_coarse_features, source_occupy_sdf_labels, source_detail_mapping_dict, coarse_scale = 2, detail_scale = 1,expand=0):
+def mapping_occupy_voxels_coarse_based(source_occupy_voxels, target_occupy_voxels, source_coarse_features, target_coarse_features, source_occupy_sdf_labels, source_detail_mapping_dict, coarse_scale = 2, detail_scale = 1,expand=1):
     source_coarse_features = source_coarse_features.squeeze(0)
 
     detail_source_occupy_down_voxels = np.unique(np.array(source_occupy_voxels // detail_scale), axis=0)
