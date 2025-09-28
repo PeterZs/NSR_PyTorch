@@ -104,6 +104,7 @@ source_occupy_voxels = source_occupy_voxels // 4
 
 #get source  feature
 
+# best extract_t and extract_l for ShapeNetCorev2
 extract_t = 11
 extract_l = 9
 cfg_s = 2.5

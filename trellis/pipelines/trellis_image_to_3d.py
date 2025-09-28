@@ -210,7 +210,7 @@ class TrellisImageTo3DPipeline(Pipeline):
         total_extract_features = None
         reso = flow_model.resolution
 
-        noise_time = 0.01
+        noise_time = 0.0  # when mapping topology changes greatly, add more noise; otherwise, keep it low 
         for i in range(sample_time):
             noise = torch.randn(num_samples, flow_model.in_channels, reso, reso, reso).to(self.device)
             noise = noise * (noise_time / total_steps) + (1 - (noise_time / total_steps)) * latent

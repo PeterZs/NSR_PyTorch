@@ -14,6 +14,8 @@ import json
 test_file = './objaverse_cor/test_file.json'
 test_id =  0
 
+# best extract_t and extract_l for ShapeNetCorev2
+# adjust noise added strength in ./trellis/pipelines/trellis_image_to_3d.py L213 for greatly/slightly topology changes
 extract_t = 11
 extract_l = 9
 

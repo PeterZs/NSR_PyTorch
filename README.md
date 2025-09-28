@@ -30,6 +30,18 @@ Our method also supports various applications, such as shape co-segmentation, ke
 
 ![Teaser Image](./assets/teaser.png)
 
+
+## 📌 To-Do List
+- [x] Release NSR-PyTorch code with pretrained model, environment setup guide, dataset preparation, and batch testing scripts
+- [x] Batch testing script for Objaverse dense matching  
+- [x] Batch testing script for ShapeNet co-segmentation  
+- [ ] Single source-to-target demo script  
+- [ ] Keypoint matching testing script  
+
+This repository is still under active development.  
+If you have any questions or issues, feel free to contact me at [Email](mailto:dukeyu@std.uestc.edu.cn).
+
+
 <!-- Installation -->
 ## 🚀 Installation
 
